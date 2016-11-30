@@ -23,14 +23,56 @@
     [super viewDidLoad];
     cellIdentifier = @"MainSectionTableViewCell";
     
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    self.title = @"懒人笔记";
-    //add title and subviews for navigationBar
-    [self addTitleSubviews];
-    //初始化并增加tableView
-    [self initAddTabelView];
-    // Do any additional setup after loading the view, typically from a nib.
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 200, 200, 50)];
+    imageView.backgroundColor = [UIColor blackColor];
+    imageView.image = [self makeGenerateBar:@"1234567890" width:200 height:50];
+    imageView.transform = CGAffineTransformRotate(CGAffineTransformIdentity, M_PI_2);
+    [self.view addSubview:imageView];
+    
+    UIImageView *qdImageView = [[UIImageView alloc] initWithFrame:CGRectMake(100, 400, 200, 200)];
+    qdImageView.image = [self makeQDBar:@"12344567890" width:200 height:200];
+    [self.view addSubview:qdImageView];
+//    self.automaticallyAdjustsScrollViewInsets = NO;
+//    self.title = @"懒人笔记";
+//    //add title and subviews for navigationBar
+//    [self addTitleSubviews];
+//    //初始化并增加tableView
+//    [self initAddTabelView];
+//    // Do any additional setup after loading the view, typically from a nib.
 }
+
+//生成条形码
+-(UIImage *)makeGenerateBar:(NSString *)code width:(CGFloat)width  height:(CGFloat)height {
+    CIImage *barcodeImage;
+    NSData *data = [code dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:NO];
+    CIFilter *filter = [CIFilter filterWithName:@"CICode128BarcodeGenerator"];
+    [filter setValue:data forKey:@"inputMessage"];
+    
+    barcodeImage = [filter outputImage];
+    CGFloat scaleX = width / barcodeImage.extent.size.width;
+    CGFloat scaleY = height / barcodeImage.extent.size.height;
+    CIImage *tempImage = [barcodeImage imageByApplyingTransform:CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleY)];
+    
+    return [UIImage imageWithCIImage:tempImage];
+}
+
+//生成二维码
+-(UIImage *)makeQDBar:(NSString *)code width:(CGFloat)width  height:(CGFloat)height {
+    CIImage *barcodeImage;
+    NSData *data = [code dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:NO];
+    CIFilter *filter = [CIFilter filterWithName:@"CIQRCodeGenerator"];
+    [filter setValue:data forKey:@"inputMessage"];
+    
+    barcodeImage = [filter outputImage];
+    CGFloat scaleX = width / barcodeImage.extent.size.width;
+    CGFloat scaleY = height / barcodeImage.extent.size.height;
+    CIImage *tempImage = [barcodeImage imageByApplyingTransform:CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleY)];
+    
+    return [UIImage imageWithCIImage:tempImage];
+}
+
+
+
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -182,4 +224,3 @@
 } //stringFromDate
 
 @end
-
